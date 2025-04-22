@@ -454,7 +454,7 @@ func broadcastToRoom(room *Room, message Message) {
 	}
 }
 
-func main() {
+func init() {
 	http.Handle("/", http.FileServer(http.Dir(".")))
 	http.HandleFunc("/ws", handleWebSocket)
 
