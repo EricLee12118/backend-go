@@ -38,7 +38,7 @@ func main() {
 
 	// 配置 CORS
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"http://localhost:3000"}
+	corsConfig.AllowOrigins = []string{"http://localhost:63343"}
 	corsConfig.AllowCredentials = true
 	r.Use(cors.New(corsConfig))
 
@@ -66,7 +66,6 @@ func main() {
 	})
 
 	// User
-	r.GET("/api/hello", userHandler.Hello)
 	r.POST("/api/login", userHandler.Login)
 	r.POST("/api/logout", userHandler.Logout)
 	r.POST("api/register", userHandler.Register)

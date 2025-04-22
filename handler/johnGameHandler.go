@@ -36,9 +36,11 @@ func (h *JoinGameHandler) JoinGame(c *gin.Context) {
 	}()
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Game connected",
-		"user":    joinGame.Username,
 		"code":    http.StatusOK,
+		"message": "Game connected",
+		"data": gin.H{
+			"username": joinGame.Username,
+		},
 	})
 }
 

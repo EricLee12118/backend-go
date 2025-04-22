@@ -24,21 +24,6 @@ func NewUserHandler(userService service.UserService) *UserHandler {
 	return &UserHandler{UserService: userService}
 }
 
-func (h *UserHandler) Hello(c *gin.Context) {
-	session := sessions.Default(c)
-	user := session.Get("user")
-	if user != nil {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello from Go Backend! (Authenticated)",
-			"user":    user,
-		})
-	} else {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Hello from Go Backend! (Guest)",
-		})
-	}
-}
-
 func (h *UserHandler) Login(c *gin.Context) {
 	var loginData struct {
 		Username string `json:"username" binding:"required"`
@@ -70,8 +55,9 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
 		"message": "Logged in successfully",
-		"user": gin.H{
+		"data": gin.H{
 			"username": user.Username,
 			"id":       user.ID,
 		},
@@ -92,7 +78,11 @@ func (h *UserHandler) Register(c *gin.Context) {
 
 	h.UserService.Register(user)
 
-	c.JSON(http.StatusOK, gin.H{"message": "Registered successfully"})
+	c.JSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
+		"message": "Registered successfully",
+		"data":    gin.H{},
+	})
 }
 
 func (h *UserHandler) Logout(c *gin.Context) {
@@ -103,7 +93,11 @@ func (h *UserHandler) Logout(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to logout"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
+	c.JSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
+		"message": "Logged out successfully",
+		"data":    gin.H{},
+	})
 }
 
 func (h *UserHandler) ProtectedData(c *gin.Context) {
@@ -112,8 +106,9 @@ func (h *UserHandler) ProtectedData(c *gin.Context) {
 	userID, _ := session.Get("userID").(int64)
 
 	c.JSON(http.StatusOK, gin.H{
+		"code":    http.StatusOK,
 		"message": "This is protected data",
-		"user": gin.H{
+		"data": gin.H{
 			"username": username,
 			"id":       userID,
 		},
