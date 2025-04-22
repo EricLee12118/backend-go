@@ -162,6 +162,10 @@ func main() {
 	userService := service.NewUserService(userDAO)
 	userHandler := api.NewUserHandler(userService)
 
+	joinroomDAO := dao.NewJoinRoomDAO(db)
+	joinroomService := service.NewJoinRoomService(joinroomDAO)
+	joinRoomHandler := api.NewJoinRoomHandler(joinroomService)
+
 	// 初始化 Gin 路由
 	r := gin.Default()
 
@@ -180,11 +184,14 @@ func main() {
 	store := cookie.NewStore([]byte(secret))
 	r.Use(sessions.Sessions("mysession", store))
 
-	// 定义路由
+	// User
 	r.GET("/api/hello", userHandler.Hello)
 	r.POST("/api/login", userHandler.Login)
 	r.POST("/api/logout", userHandler.Logout)
 	r.POST("api/register", userHandler.Register)
+
+	// Room
+	r.POST("/api/joinroom", joinRoomHandler.JoinRoom)
 
 	protected := r.Group("/api/protected")
 	protected.Use(middleware.AuthRequired)
