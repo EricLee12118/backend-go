@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 
 	"awesomeProject/config"
@@ -49,6 +50,20 @@ func main() {
 	}
 	store := cookie.NewStore([]byte(secret))
 	r.Use(sessions.Sessions("mysession", store))
+
+	// 静态文件服务
+	r.GET("/", func(c *gin.Context) {
+		http.FileServer(http.Dir(".")).ServeHTTP(c.Writer, c.Request)
+	})
+	// WebSocket 路由
+	r.GET("/ws", func(c *gin.Context) {
+		service.HandleWebSocket(c.Writer, c.Request)
+	})
+	// 房间管理API
+	r.GET("/api/rooms", func(c *gin.Context) {
+		roomInfos := service.GetAllRooms()
+		c.JSON(http.StatusOK, roomInfos)
+	})
 
 	// User
 	r.GET("/api/hello", userHandler.Hello)

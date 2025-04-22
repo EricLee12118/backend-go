@@ -1,4 +1,4 @@
-package main
+package service
 
 import (
 	"encoding/json"
@@ -145,7 +145,7 @@ func leaveRoom(room *Room, conn *websocket.Conn, userID string) (bool, string) {
 	return isOwner, userName
 }
 
-func getAllRooms() []RoomInfo {
+func GetAllRooms() []RoomInfo {
 	roomsMu.Lock()
 	defer roomsMu.Unlock()
 
@@ -175,7 +175,7 @@ func getAllRooms() []RoomInfo {
 	return roomInfos
 }
 
-func handleWebSocket(w http.ResponseWriter, r *http.Request) {
+func HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println("Upgrade error:", err)
@@ -241,7 +241,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		switch message.Type {
 		case "get_rooms":
 			// 获取房间列表
-			roomInfos := getAllRooms()
+			roomInfos := GetAllRooms()
 			response := Message{
 				Type:    "rooms_list",
 				Content: "Available rooms",
@@ -452,19 +452,4 @@ func broadcastToRoom(room *Room, message Message) {
 			delete(room.clients, client)
 		}
 	}
-}
-
-func main() {
-	http.Handle("/", http.FileServer(http.Dir(".")))
-	http.HandleFunc("/ws", handleWebSocket)
-
-	// 添加一个API端点，用于获取房间列表
-	http.HandleFunc("/api/rooms", func(w http.ResponseWriter, r *http.Request) {
-		roomInfos := getAllRooms()
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(roomInfos)
-	})
-
-	log.Println("Server starting on :8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
 }
