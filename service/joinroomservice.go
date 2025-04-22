@@ -10,7 +10,7 @@ import (
 )
 
 type RoomService interface {
-	RoomListen()
+	RoomListen() (err error)
 }
 
 // Player 结构体表示游戏中的玩家
@@ -271,14 +271,17 @@ func (gs *JoinRoomSever) runGame() {
 	}
 }
 
-func (s *JoinRoomServiceImpl) RoomListen() {
+func (s *JoinRoomServiceImpl) RoomListen() (err error) {
 	server, err := NewJoinRoomServer("localhost", 5000)
 	if err != nil {
 		log.Fatal("无法启动服务器:", err)
+		return err
 	}
 	defer server.Listener.Close()
 
 	if err := server.Start(); err != nil {
 		log.Fatal("服务器错误:", err)
+		return err
 	}
+	return nil
 }

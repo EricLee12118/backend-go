@@ -28,7 +28,12 @@ func (h *JoinRoomHandler) JoinRoom(c *gin.Context) {
 		return
 	}
 
-	h.RoomService.RoomListen()
+	go func() {
+		err := h.RoomService.RoomListen()
+		if err != nil {
+			return
+		}
+	}()
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "room connected",
